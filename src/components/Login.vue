@@ -7,16 +7,22 @@
       </div>
 
       <!-- 表单区域 -->
-      <el-form label-width="0" class="login_form" :model="login_form">
+      <el-form
+        label-width="0"
+        class="login_form"
+        :model="login_form"
+        :rules="loginFormRules"
+        ref="loginRef"
+      >
         <!-- model 属性是element表单的属性 -->
-        <el-form-item>
+        <el-form-item prop="username">
           <el-input
             v-model="login_form.username"
             placeholder="用户名"
             prefix-icon="iconfont icon-user"
           ></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
             type="password"
             v-model="login_form.password"
@@ -25,24 +31,63 @@
           ></el-input>
         </el-form-item>
         <el-form-item class="btn">
-          <el-button type="primary">登录</el-button>
-          <el-button type="info">重置</el-button>
+          <el-button type="primary" @click="loginfn">登录</el-button>
+          <el-button type="info" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
+import { log } from "util";
 export default {
   data() {
     return {
       login_form: {
         username: "admin",
         password: "123456"
+      },
+      loginFormRules: {
+        username: [
+          { required: true, message: "请输入用户名称", trigger: "blur" },
+          { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
+        ]
       }
     };
   },
-  methods: {}
+  methods: {
+    //登录验证
+    loginfn() {
+      this.$refs.loginRef.validate(async res => {
+        if (!res) {
+          return;
+        } else {
+          let { data } = await this.$http.post("login", this.login_form);
+          if (data.meta.status == 200) {
+            window.sessionStorage.setItem("token", data.data.token);
+            this.$message.success("登录成功");
+            // 页面跳转
+            this.$router.push("/home");
+          } else { 
+            // this.$message.error("用户名或密码错误");
+            this.$message({
+              showClose: true,
+              message: "用户名或密码错误",
+              type: "error"
+            });
+            return
+          }
+        }
+      });
+    },
+    reset() {
+      this.$refs.loginRef.resetFields();
+    }
+  }
 };
 </script>
 <style scoped lang="less">
