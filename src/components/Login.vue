@@ -68,10 +68,11 @@ export default {
         } else {
           let { data } = await this.$http.post("login", this.login_form);
           if (data.meta.status == 200) {
+            sessionStorage.setItem('user',JSON.stringify(data.data))
             window.sessionStorage.setItem("token", data.data.token);
             this.$message.success("登录成功");
             // 页面跳转
-            this.$router.push("/home");
+           this.$router.push("/home");
           } else { 
             // this.$message.error("用户名或密码错误");
             this.$message({

@@ -2,15 +2,21 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue' // 引入Login.vue组件
 import Home from '../components/Home.vue'
-
+import UserPage from '../components/user/UserPage.vue'
+import Welcome from '../components/Welcome.vue'
 Vue.use(VueRouter)
 
 
 const routes = [
   {path:'/',redirect:'/login'}, // 重定向login
   {path:'/login', component:Login}, // 登录
-  {path:'/home',component:Home} // home 页面
+  {path:'/home',component:Home,redirect:'/welcome',children:[
+    {path:'/welcome',component:Welcome},
+    {path:'/users',component:UserPage}
+  ]} ,// home 页面
+  
 ]
+
 
 const router = new VueRouter({
   routes
@@ -30,3 +36,8 @@ router.beforeEach((to,from,next)=>{
 
 
 export default router
+
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
