@@ -7,6 +7,9 @@ import './assets/css/global.css'
 // 导入图标样式表
 import './assets/fonts/iconfont.css'
 
+import ZkTable from 'vue-table-with-tree-grid'
+ 
+Vue.component("table-tree", ZkTable) 
 //引入axios 
 import axios from 'axios'
 // 设置请求根路径

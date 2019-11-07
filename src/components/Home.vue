@@ -78,7 +78,8 @@ export default {
         102:'iconfont icon-danju',
         145:'iconfont icon-baobiao',
       },
-      menuslist: []
+      menuslist: [],
+
     };
   },
   methods: {

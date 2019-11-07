@@ -24,14 +24,29 @@
           <!-- <el-button type="primary">
           添加用户</el-button>-->
           <el-button type="primary" @click="dialogFormVisible = true">添加用户</el-button>
-
           <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
-            <el-form label-position="right" label-width="80px">
-              <el-form-item label="用户名" prop="name">
-                <el-input></el-input>
+            <el-form
+              label-position="right"
+              label-width="80px"
+              :model="addDateForm"
+              :ref="addDateForm"
+            >
+              <el-form-item
+                label="用户名"
+                prop="username"
+                :rules="[ { required: true, message: '请输入用户名称', trigger: 'blur'},
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                  ]"
+              >
+                <el-input v-model="addDateForm.username"></el-input>
               </el-form-item>
-              <el-form-item label="密  码" prop="password">
-                <el-input></el-input>
+              <el-form-item
+                label="密  码"
+                prop="password"
+                :rules="[ { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }]"
+              >
+                <el-input v-model="addDateForm.password"></el-input>
               </el-form-item>
               <el-form-item
                 prop="email"
@@ -41,14 +56,18 @@
               >
                 <el-input v-model="addDateForm.email"></el-input>
               </el-form-item>
-              <el-form-item label="手  机" prop="tel">
+              <el-form-item label="手  机" prop="mobile">
                 <el-input></el-input>
               </el-form-item>
+              <el-form-item>
+                <el-button @click="resetForm(addDateForm)">取 消</el-button>
+                <el-button type="primary" @click="submitForm(addDateForm)">确 定</el-button>
+              </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-            </div>
+            <!-- <div  >
+              <el-button @click="resetForm(addDateForm)">取 消</el-button>
+              <el-button type="primary" @click="submitForm(addDateForm)">确 定</el-button>
+            </div>-->
           </el-dialog>
         </el-col>
       </el-row>
@@ -69,20 +88,44 @@
             ></el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min- width="220">
-          <el-tooltip class="item" :enterable=false effect="light" content="编辑" placement="top">
-            <el-button size="small" type="primary" icon="el-icon-edit"></el-button>
-          </el-tooltip>
-          <el-tooltip class="item" :enterable=false effect="light"  content="删除" placement="top">
-            <el-button size="small" type="danger" icon="el-icon-delete"></el-button>
-          </el-tooltip>
-          <el-tooltip class="item" :enterable=false hide-after:1 effect="light" content="设置" placement="top">
-            <el-button size="small" type="warning" icon="el-icon-setting"></el-button>
-          </el-tooltip>
+        <el-table-column label="操作" min- width="220" prop="id">
+          <template slot-scope="userid">
+            <el-tooltip class="item" :enterable="false" effect="light" content="编辑" placement="top">
+              <el-button
+                size="small"
+                type="primary"
+                icon="el-icon-edit"
+                @click="edituser(userid.row.id)"
+              ></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" :enterable="false" effect="light" content="删除" placement="top">
+              <el-button
+                size="small"
+                type="danger"
+                icon="el-icon-delete"
+                @click="deleteUser(userid.row.id)"
+              ></el-button>
+            </el-tooltip>
+            <el-tooltip
+              class="item"
+              :enterable="false"
+              hide-after:1
+              effect="light"
+              content="设置"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                type="warning"
+                icon="el-icon-setting"
+                @click="settingUser(userid.row.id)"
+              ></el-button>
+            </el-tooltip>
+          </template>
         </el-table-column>
       </el-table>
-      <!-- 分页 页码 -->
 
+      <!-- 分页 页码 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -92,6 +135,58 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="tableData.total"
       ></el-pagination>
+
+      <!-- 用户编辑 -->
+      <el-dialog title="用户编辑" :visible.sync="editVisible" width="40%">
+        <el-form label-position="left">
+          <el-form-item label="用户名" label-width="60px">
+            <el-input v-model="edituserData.username"></el-input>
+          </el-form-item>
+          <el-form-item label="邮　箱" label-width="60px">
+            <el-input v-model="edituserData.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" label-width="60px">
+            <el-input v-model="edituserData.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editfn">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 用户设置 -->
+      <el-dialog title="用户设置" :visible.sync="setVisible" width="30%">
+        <el-form label-position="left">
+          <el-row>
+            <el-col :span="3">用户名:</el-col>
+            <el-col :span="10">{{edituserData.username}}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="3">权限:</el-col>
+            <el-col :span="10">{{
+              userrid.find(e=>e.id==edituserData.rid)?userrid.find(e=>e.id==edituserData.rid).roleName:"未查询到权限名称"
+             
+              
+              }}</el-col>
+          </el-row>
+          <el-form-item></el-form-item>
+          <el-form-item label="选择角色权限" >
+            <el-select v-model="edituserData.rid" placeholder="请选择" >
+              <el-option
+                v-for="item in userrid"
+                :key="item.id"
+                :label="item.roleName"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="setVisible = false">取 消</el-button>
+          <el-button type="primary" @click="roleChange">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -102,6 +197,8 @@ export default {
   },
   data() {
     return {
+      // 用户权限
+      userrid: [],
       input: "",
       tableData: [],
       userinfo: {
@@ -111,11 +208,24 @@ export default {
       },
       dialogFormVisible: false,
       addDateForm: {
-        name: "",
+        // 添加用户信息
+        username: "",
         password: "",
         email: "",
-        tel: ""
-      }
+        mobile: ""
+      },
+      editVisible: false, // 用户编辑 隐藏显示
+      edituserData: {
+        id: "",
+        email: "",
+        mobile: "",
+        username: "",
+       
+        rid:''
+
+      },
+      setVisible: false, // 用户设置框显示隐藏
+     roleName:'', //
     };
   },
   methods: {
@@ -127,6 +237,7 @@ export default {
 
       if (data.meta.status != 200) return this.$message.error(data.meta.msg);
       this.tableData = data.data;
+      // console.log( this.tableData);
     },
     handleSizeChange(val) {
       this.userinfo.pagesize = val;
@@ -141,24 +252,91 @@ export default {
       const { data: res } = await this.$http.put(
         "/users/" + id + "/state/" + state
       );
-      console.log(res);
+
       if (res.meta.status != 200) return this.$message.error("状态修改失败");
     },
     // 根据搜索框内用户姓名查找
     search() {
       this.userinfo.query = this.input;
       this.getUsers();
-    }
+    },
 
-    // 添加用户验证
-    // rules: {
-    //   name: [
-    //     { required: true, message: "请输入用户名", trigger: "blur" },
-    //     { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-    //   ],
-    //   email: [{ required: true, message: "请填写密码", trigger: "blur" }],
-    //   tel: [{ required: true, message: "手机号码", trigger: "blur" }]
-    // }
+    // 添加用户
+    submitForm(formName) {
+      this.$refs[formName].validate(async valid => {
+        if (!valid) return this.$message.error("预验证错误");
+        formName.role_id = 40;
+
+        const { data: res } = await this.$http.post("users", formName);
+        if (res.meta.status != 201) return this.$message.error(res.meta.msg);
+        this.$message.success("添加成功");
+        console.log(res);
+
+        this.resetForm(formName);
+         this.getUsers();
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+      this.dialogFormVisible = false;
+    },
+    // 用户编辑
+    async edituser(id) {
+      const { data: res } = await this.$http.get("users/" + id);
+      // console.log(res);
+      if (res.meta.status != 200) return this.$message.error(res.meta.msg);
+      this.editVisible = true;
+      this.edituserData = res.data;
+    },
+    // 用户编辑提交
+    async editfn() {
+      // console.log(this.edituserData);
+      const { data: res } = await this.$http.put(
+        "users/" + this.edituserData.id,
+        // this.edituserData
+      );
+      console.log(res);
+      if (res.meta.status != 200) return this.$message.error(res.meta.msg);
+
+      this.editVisible = false;
+      this.getUsers();
+    },
+    // 用户删除
+    async deleteUser(id) {
+      console.log(id);
+      confirm("确定要删除?");
+      const { data: res } = await this.$http.delete("users/" + id);
+      console.log(res);
+      if (res.meta.status != 200) return this.$message.error(res.meta.msg);
+      this.$message.success("删除成功");
+      this.userinfo.pagenum=1;
+      this.getUsers();
+    },
+    //角色权限
+    async getridlis() {
+      const { data: res } = await this.$http.get("roles");
+      this.userrid = res.data;
+      console.log(this.userrid);
+      
+    },
+    // 用户设置
+    async settingUser(id) {
+      this.getridlis();
+      const { data: res } = await this.$http.get("users/" + id);
+      // console.log(res);
+      if (res.meta.status != 200) return this.$message.error(res.meta.msg);
+      this.setVisible = true;
+      this.edituserData = res.data;
+    },
+   async roleChange() {
+
+     console.log(this.edituserData);
+      const {data:res} = await this.$http.put("users/"+this.edituserData.id+"/role",{rid:this.edituserData.rid});
+       if (res.meta.status != 200) return this.$message.error(res.meta.msg);
+      this.getUsers();
+      this.setVisible=false;
+
+    }
   }
 };
 </script>

@@ -4,6 +4,12 @@ import Login from '../components/Login.vue' // 引入Login.vue组件
 import Home from '../components/Home.vue'
 import UserPage from '../components/user/UserPage.vue'
 import Welcome from '../components/Welcome.vue'
+import RoleList from '../components/roles/RoleList.vue'
+import Rights from '../components/roles/Rights.vue'
+import ShopLists from '../components/shop/ShopLists.vue'
+import Params from '../components/shop/Params.vue'
+import Categories from '../components/shop/Categories.vue'
+import ShopListAdd from '../components/shop/ShopListAdd.vue'
 Vue.use(VueRouter)
 
 
@@ -12,8 +18,17 @@ const routes = [
   {path:'/login', component:Login}, // 登录
   {path:'/home',component:Home,redirect:'/welcome',children:[
     {path:'/welcome',component:Welcome},
-    {path:'/users',component:UserPage}
-  ]} ,// home 页面
+    {path:'/users',component:UserPage},
+    {path:'/roles',component:RoleList},
+    {path:'/rights',component:Rights},
+    {path:'/add',component:ShopListAdd},
+    {path:"/goods",component:ShopLists,},
+   
+    {path:"/params",component:Params},
+    {path:"/categories",component:Categories,},
+    
+  ]} ,
+ 
   
 ]
 
