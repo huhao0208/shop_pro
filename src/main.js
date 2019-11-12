@@ -9,11 +9,27 @@ import './assets/fonts/iconfont.css'
 
 import ZkTable from 'vue-table-with-tree-grid'
  
+//导入过滤器
+import "./filters"
+
+
+
+
+// 导入富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+Vue.use(VueQuillEditor)
+
+
 Vue.component("table-tree", ZkTable) 
 //引入axios 
 import axios from 'axios'
 // 设置请求根路径
-axios.defaults.baseURL =`http://127.0.0.1:8888/api/private/v1/`
+
+// axios.defaults.baseURL =`https://www.liulongbin.top:8888/api/private/v1/`
+ axios.defaults.baseURL =`http://127.0.0.1:8888/api/private/v1/`
 
 //axios请求拦截器
 axios.interceptors.request.use(function(config){

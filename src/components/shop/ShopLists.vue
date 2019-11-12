@@ -21,20 +21,23 @@
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addshop" >添加用户</el-button>
+          <el-button type="primary" @click="addshop">添加商品</el-button>
         </el-col> 
       </el-row>
       <el-table :data="goodsList.goods" height="700">
         <el-table-column type="index" label="索引"></el-table-column>
-        <el-table-column prop="goods_name" label="商品名称"></el-table-column>
-        <el-table-column prop="goods_weight" label="商品重量"></el-table-column>
+        <el-table-column prop="goods_name" label="商品名称" min-width="200"></el-table-column>
+        <el-table-column prop="goods_weight" label="商品重量" width="80"></el-table-column>
         <el-table-column label="创建时间">
-          <template slot-scope="scope">{{dateFormat(scope.row.add_time/1,"yyyymmdd")}}</template>
+          <template slot-scope="scope">{{scope.row.add_time| dateFormat}}</template>
         </el-table-column>
 
-        <el-table-column label="操作">
-          <el-button size="small" type="primary" icon="el-icon-edit">编辑</el-button>
-          <el-button size="small" type="danger" icon="el-icon-delete">删除</el-button>
+        <el-table-column label="操作" min-width="100">
+          <template slot-scope="scope">
+
+           <el-button size="small" type="primary" icon="el-icon-edit" >编辑</el-button>
+          <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteGood(scope.row.goods_id)">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -63,31 +66,7 @@ export default {
         pagenum: 1, //当前页码
         pagesize: 10 //每页显示条数
       },
-      //日期格式haul
-      dateFormat: function(date, yy) {
-        let ss = new Date(date);
-        let res =
-          yy && yy == "yyyymmdd"
-            ? ss.getFullYear() +
-              "年" +
-              (ss.getMonth() + 1) +
-              "月" +
-              ss.getDate() +
-              "日"
-            : ss.getFullYear() +
-              "年" +
-              (ss.getMonth() + 1) +
-              "月" +
-              ss.getDate() +
-              "日" +
-              "　" +
-              ss.getHours() +
-              ":" +
-              ss.getMinutes() +
-              ":" +
-              ss.getSeconds();
-        return res;
-      },
+   
       searchipt:'',
         
     };
@@ -120,7 +99,30 @@ export default {
         
     },
      addshop(){
-      this.$router.push('/add')
+      this.$router.push('/goodsadd')
+  },
+  // 删除商品
+  deleteGood(id){
+    console.log(id);
+     this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async() => {
+          const {data:res} = await this.$http.delete("goods/"+id)
+         // console.log(res);
+          if(res.meta.status !==200) return this.$message.error("删除失败")
+           this.getGoodsList();
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
   }
   },
  

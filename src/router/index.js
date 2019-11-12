@@ -10,6 +10,8 @@ import ShopLists from '../components/shop/ShopLists.vue'
 import Params from '../components/shop/Params.vue'
 import Categories from '../components/shop/Categories.vue'
 import ShopListAdd from '../components/shop/ShopListAdd.vue'
+import Orders from '../components/orders/Orders.vue'
+import Reports from '../components/reports/Reports.vue'
 Vue.use(VueRouter)
 
 
@@ -21,11 +23,13 @@ const routes = [
     {path:'/users',component:UserPage},
     {path:'/roles',component:RoleList},
     {path:'/rights',component:Rights},
-    {path:'/add',component:ShopListAdd},
-    {path:"/goods",component:ShopLists,},
    
+    {path:"/goods",component:ShopLists,},
+    {path:'/goodsadd',component:ShopListAdd},
     {path:"/params",component:Params},
     {path:"/categories",component:Categories,},
+    {path:"/orders",component:Orders,},
+    {path:"/reports",component:Reports,},
     
   ]} ,
  
@@ -52,6 +56,7 @@ router.beforeEach((to,from,next)=>{
 
 export default router
 
+// 解决相同路径重复访问出错  错误捕获
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
