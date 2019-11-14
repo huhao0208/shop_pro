@@ -20,9 +20,9 @@
       <!-- 订单内容列表 -->
       <el-table :data="ordersList.goods">
         <el-table-column type="index" label="#"></el-table-column>
-        <el-table-column prop="order_number" label="订单编号" width="220"></el-table-column>
-        <el-table-column prop="order_price" label="订单价格"></el-table-column>
-        <el-table-column prop="order_pay" label="是否付款">
+        <el-table-column prop="order_number" label="订单编号" min-width="250"></el-table-column>
+        <el-table-column prop="order_price" label="订单价格" min-width="50px"></el-table-column>
+        <el-table-column prop="order_pay" label="是否付款" min-width="100px">
           <template slot-scope="scope">
             <el-tag
               :type="scope.row.order_pay==0? 'danger':'success'"
@@ -30,20 +30,20 @@
           </template>
         </el-table-column>
         <el-table-column prop="is_send" label="是否发货"></el-table-column>
-        <el-table-column prop="create_time" label="下单时间">
+        <el-table-column prop="create_time" label="下单时间" min-width="200px">
           <template slot-scope="scope">{{scope.row.create_time|dateFormat()}}</template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" min-width="200px">
           <template slot-scope="scope">
             <el-button
-              size="small"
+              size="mini"
               type="primary"
               icon="el-icon-edit"
               @click="ordersEdit(scope.row)"
             ></el-button>
             <el-button
-              size="small"
-              type="danger"
+              size="mini"
+              type="success"
               icon="el-icon-location"
               @click="location(scope.row)"
             ></el-button>
@@ -95,6 +95,7 @@
   </div>
 </template>
 <script>
+
 import cityOptions from "../../assets/js/city_data2017_element.js";
 export default {
   created() {
